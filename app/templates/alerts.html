@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Alerts{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-bell"></i> Alerts</h2>
+    <span class="badge bg-danger fs-6">{{ alert_data|length }} Total</span>
+</div>
+
+{% if alert_data %}
+<div class="accordion" id="alertsAccordion">
+    {% for item in alert_data %}
+    {% set a = item.alert %}
+    {% set suggestions = item.suggestions %}
+    <div class="accordion-item mb-2 border rounded">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#alert{{ a.alert_id }}">
+                <div class="d-flex w-100 justify-content-between align-items-center me-3">
+                    <div>
+                        {% if a.severity == 'High Risk' %}
+                            <span class="badge badge-high me-2">High Risk</span>
+                        {% elif a.severity == 'Warning' %}
+                            <span class="badge badge-warning me-2">Warning</span>
+                        {% else %}
+                            <span class="badge badge-safe me-2">Safe</span>
+                        {% endif %}
+                        <strong>{{ item.project_name }}</strong>
+                        <span class="text-muted ms-2">- {{ a.alert_type }}</span>
+                    </div>
+                    <div>
+                        {% if a.status == 'UNREAD' %}
+                            <span class="badge bg-danger">UNREAD</span>
+                        {% elif a.status == 'SEEN' %}
+                            <span class="badge bg-warning text-dark">SEEN</span>
+                        {% else %}
+                            <span class="badge bg-success">ACKNOWLEDGED</span>
+                        {% endif %}
+                        <small class="text-muted ms-2">{{ a.created_at.strftime('%Y-%m-%d %H:%M') if a.created_at else '' }}</small>
+                    </div>
+                </div>
+            </button>
+        </h2>
+        <div id="alert{{ a.alert_id }}" class="accordion-collapse collapse" data-bs-parent="#alertsAccordion">
+            <div class="accordion-body">
+                <!-- Alert Details -->
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <p class="mb-2"><strong>Message:</strong> {{ a.message }}</p>
+                        <p class="mb-0"><strong>Risk Score:</strong>
+                            <span class="badge {% if a.risk_score > 0.8 %}badge-high{% elif a.risk_score > 0.5 %}badge-warning{% else %}badge-safe{% endif %}">
+                                {{ "%.2f"|format(a.risk_score) }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        {% if a.status != 'ACKNOWLEDGED' %}
+                        <div class="btn-group">
+                            {% if a.status == 'UNREAD' %}
+                            <form method="POST" action="/alerts/{{ a.alert_id }}/seen" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-eye"></i> Mark Seen
+                                </button>
+                            </form>
+                            {% endif %}
+                            <form method="POST" action="/alerts/{{ a.alert_id }}/acknowledge" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-check-circle"></i> Acknowledge
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <small class="text-success">
+                            <i class="bi bi-check-circle-fill"></i> Acknowledged
+                            {% if a.acknowledged_at %}
+                            on {{ a.acknowledged_at.strftime('%Y-%m-%d %H:%M') }}
+                            {% endif %}
+                        </small>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- AI Suggestions -->
+                {% if suggestions %}
+                <hr>
+                <h5 class="mb-3"><i class="bi bi-robot"></i> AI-Powered Recommendations</h5>
+
+                {% if suggestions.root_cause_analysis %}
+                <div class="suggestion-section">
+                    <h6><i class="bi bi-search"></i> Root Cause Analysis</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for s in suggestions.root_cause_analysis %}
+                        <li class="list-group-item list-group-item-light py-1"><small>{{ s }}</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if suggestions.cost_optimization %}
+                <div class="suggestion-section">
+                    <h6><i class="bi bi-currency-dollar"></i> Cost Optimization</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for s in suggestions.cost_optimization %}
+                        <li class="list-group-item list-group-item-light py-1"><small>{{ s }}</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if suggestions.resource_allocation %}
+                <div class="suggestion-section">
+                    <h6><i class="bi bi-people"></i> Resource Allocation</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for s in suggestions.resource_allocation %}
+                        <li class="list-group-item list-group-item-light py-1"><small>{{ s }}</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if suggestions.tech_improvements %}
+                <div class="suggestion-section">
+                    <h6><i class="bi bi-gear"></i> Tech Improvements</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for s in suggestions.tech_improvements %}
+                        <li class="list-group-item list-group-item-light py-1"><small>{{ s }}</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if suggestions.risk_mitigation %}
+                <div class="suggestion-section">
+                    <h6><i class="bi bi-shield-exclamation"></i> Risk Mitigation</h6>
+                    <ul class="list-group list-group-flush">
+                        {% for s in suggestions.risk_mitigation %}
+                        <li class="list-group-item list-group-item-light py-1"><small>{{ s }}</small></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-bell-slash" style="font-size: 3rem; color: #ccc;"></i>
+    <p class="text-muted mt-2">No alerts found.</p>
+</div>
+{% endif %}
+{% endblock %}

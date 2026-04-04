@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Edit Project{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0"><i class="bi bi-pencil"></i> Edit Project: {{ project.name }}</h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST" action="/projects/edit/{{ project.id }}">
+                    <div class="row">
+                        <div class="col-md-{% if managers %}8{% else %}12{% endif %} mb-3">
+                            <label for="name" class="form-label">Project Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required value="{{ project.name }}">
+                        </div>
+                        {% if managers %}
+                        <div class="col-md-4 mb-3">
+                            <label for="manager_id" class="form-label">Assigned Manager</label>
+                            <select class="form-select" id="manager_id" name="manager_id">
+                                {% for m in managers %}
+                                <option value="{{ m.id }}" {% if m.id == project.manager_id %}selected{% endif %}>{{ m.name }} ({{ m.role }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+                    <h5 class="text-muted mb-3">Financial Details</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="planned_cost" class="form-label">Planned Cost ($)</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="planned_cost" name="planned_cost" value="{{ project.planned_cost or 0 }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="actual_cost" class="form-label">Actual Cost ($)</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="actual_cost" name="actual_cost" value="{{ project.actual_cost or 0 }}">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5 class="text-muted mb-3">Effort & Resources</h5>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="planned_effort" class="form-label">Planned Effort (hrs)</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="planned_effort" name="planned_effort" value="{{ project.planned_effort or 0 }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="actual_effort" class="form-label">Actual Effort (hrs)</label>
+                            <input type="number" step="0.01" min="0" class="form-control" id="actual_effort" name="actual_effort" value="{{ project.actual_effort or 0 }}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="resource_count" class="form-label">Resource Count</label>
+                            <input type="number" min="1" class="form-control" id="resource_count" name="resource_count" value="{{ project.resource_count or 1 }}">
+                        </div>
+                    </div>
+
+                    <hr>
+                    <h5 class="text-muted mb-3">Timeline & Tech</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="start_date" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="start_date" name="start_date" value="{{ project.start_date or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="end_date" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="end_date" name="end_date" value="{{ project.end_date or '' }}">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tech_stack" class="form-label">Tech Stack</label>
+                            <input type="text" class="form-control" id="tech_stack" name="tech_stack" value="{{ project.tech_stack or '' }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status">
+                                <option value="Active" {% if project.status == 'Active' %}selected{% endif %}>Active</option>
+                                <option value="Completed" {% if project.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                <option value="On Hold" {% if project.status == 'On Hold' %}selected{% endif %}>On Hold</option>
+                                <option value="Cancelled" {% if project.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a href="/projects" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancel</a>
+                        <button type="submit" class="btn btn-warning"><i class="bi bi-check-lg"></i> Update Project</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

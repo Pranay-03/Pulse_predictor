@@ -1,0 +1,51 @@
+name,planned_cost,actual_cost,planned_effort,actual_effort,resource_count,start_date,end_date,tech_stack,status,manager_id
+Cloud Migration Platform,250000,240000,2500,2400,18,2025-01-15,2025-09-30,AWS/Terraform,Active,2
+E-Commerce Revamp,180000,260000,1800,2600,14,2025-02-01,2025-10-31,React/Node.js,Active,4
+Mobile Banking App,320000,310000,3200,3100,22,2025-01-01,2025-12-31,Flutter/Dart,Active,5
+Data Warehouse Modernization,420000,580000,4000,5500,30,2024-10-01,2025-08-31,Snowflake/Python,Active,2
+AI Chatbot System,95000,88000,950,900,7,2025-03-01,2025-07-31,Python/LangChain,Completed,4
+Customer Portal Upgrade,140000,135000,1400,1350,10,2025-04-01,2025-09-30,Angular/.NET,Active,5
+DevOps Pipeline Overhaul,75000,72000,750,730,5,2025-05-01,2025-08-15,Jenkins/Docker,Completed,1
+Fraud Detection Engine,280000,350000,2800,3800,20,2025-01-15,2025-11-30,Python/XGBoost,Active,2
+Legacy ERP Migration,500000,720000,5000,7200,35,2024-06-01,2025-06-30,SAP/Java,Active,4
+Real-Time Analytics Dashboard,110000,105000,1100,1050,8,2025-06-01,2025-10-31,React/Kafka,Active,5
+Payment Gateway Integration,160000,190000,1600,2000,12,2025-03-15,2025-09-15,Java/Spring Boot,Active,2
+Inventory Management System,90000,87000,900,880,6,2025-04-15,2025-08-31,Python/Django,Completed,4
+Healthcare Records Platform,380000,520000,3800,5200,28,2024-09-01,2025-09-30,.NET/Azure,Active,5
+Cybersecurity Audit Tool,130000,125000,1300,1250,9,2025-05-15,2025-10-15,Go/React,Active,1
+Supply Chain Optimizer,200000,280000,2000,2900,15,2025-02-15,2025-11-30,Python/OR-Tools,Active,2
+Video Streaming Platform,340000,330000,3400,3300,25,2025-01-01,2025-12-31,Node.js/AWS,Active,4
+HR Onboarding System,60000,58000,600,580,4,2025-07-01,2025-09-30,React/Firebase,Active,5
+IoT Fleet Management,220000,310000,2200,3100,16,2025-03-01,2025-12-15,Python/MQTT,Active,2
+Blockchain Voting System,175000,230000,1750,2400,13,2025-04-01,2025-11-30,Solidity/React,Active,4
+Machine Learning Pipeline,150000,145000,1500,1470,11,2025-05-01,2025-10-31,Python/MLflow,Active,5
+CRM Integration Suite,115000,160000,1150,1700,8,2025-02-01,2025-08-31,Salesforce/Java,Active,2
+Microservices Refactor,190000,185000,1900,1860,14,2025-06-01,2025-12-31,.NET/Kubernetes,Active,4
+Document Management System,85000,82000,850,830,6,2025-03-15,2025-07-31,Python/FastAPI,Completed,5
+Predictive Maintenance App,260000,380000,2600,3900,19,2024-11-01,2025-08-31,Python/TensorFlow,Active,2
+API Gateway Platform,100000,96000,1000,970,7,2025-07-01,2025-11-30,Kong/Go,Active,1
+Social Media Analytics,135000,180000,1350,1900,10,2025-04-15,2025-10-15,Python/Spark,Active,4
+Warehouse Automation System,300000,290000,3000,2900,21,2025-01-15,2025-11-30,Python/ROS,Active,5
+Compliance Reporting Engine,170000,240000,1700,2500,12,2025-02-15,2025-09-30,Java/.NET,Active,2
+Customer Churn Predictor,80000,76000,800,770,5,2025-06-01,2025-09-15,Python/Scikit-learn,Completed,4
+Edge Computing Platform,230000,225000,2300,2250,17,2025-03-01,2025-12-31,Rust/C++,Active,5
+Digital Twin Simulator,290000,400000,2900,4200,20,2024-12-01,2025-10-31,Python/Unity,Active,2
+Serverless E-Commerce API,70000,68000,700,680,5,2025-08-01,2025-11-30,AWS Lambda/Node.js,Active,4
+Telemedicine Platform,350000,480000,3500,5000,26,2024-08-01,2025-07-31,React/Python,Active,5
+Quality Assurance Framework,55000,53000,550,530,4,2025-05-01,2025-08-15,Selenium/Python,Completed,1
+Natural Language Search,120000,115000,1200,1160,9,2025-06-15,2025-11-30,Python/Elasticsearch,Active,2
+Employee Performance Tracker,65000,90000,650,950,5,2025-04-01,2025-08-31,React/Express,Active,4
+Fleet Route Optimizer,145000,140000,1450,1420,10,2025-03-15,2025-09-30,Python/Google Maps,Active,5
+Smart Building Controller,195000,270000,1950,2800,14,2025-01-01,2025-10-31,Python/IoT,Active,2
+Regulatory Filing System,110000,108000,1100,1080,8,2025-07-01,2025-12-15,Java/Oracle,Active,4
+Multi-Cloud Cost Optimizer,160000,155000,1600,1560,12,2025-02-01,2025-08-31,Python/Terraform,Completed,5
+Content Delivery Network,240000,330000,2400,3400,18,2025-01-15,2025-11-30,Go/Nginx,Active,2
+Autonomous Testing Suite,100000,97000,1000,980,7,2025-05-15,2025-10-15,Python/Robot,Active,4
+Data Privacy Compliance Tool,180000,250000,1800,2600,13,2025-03-01,2025-11-30,Java/React,Active,5
+Visual Inspection System,210000,205000,2100,2050,15,2025-04-01,2025-12-31,Python/OpenCV,Active,1
+Customer 360 Platform,275000,390000,2750,4000,20,2024-10-15,2025-09-30,Salesforce/AWS,Active,2
+Automated Invoice Processor,75000,73000,750,730,5,2025-06-01,2025-09-15,Python/OCR,Active,4
+Real Estate Listing Portal,130000,125000,1300,1260,9,2025-05-01,2025-10-31,React/PostgreSQL,Active,5
+Event Ticketing Platform,105000,145000,1050,1500,7,2025-04-15,2025-09-30,Node.js/MongoDB,Active,2
+Geospatial Analytics Engine,190000,185000,1900,1870,14,2025-02-15,2025-10-15,Python/PostGIS,Active,4
+Insurance Claims Processor,310000,440000,3100,4500,23,2024-07-01,2025-06-30,Java/Camunda,Active,5

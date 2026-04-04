@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Upload CSV{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-upload"></i> Upload Projects via CSV</h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST" action="/projects/upload" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="file" class="form-label">Select CSV File</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+                        <div class="form-text">
+                            Upload a CSV file with project data. The file will be processed and predictions will be generated automatically.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a href="/projects" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancel</a>
+                        <button type="submit" class="btn btn-info text-white"><i class="bi bi-cloud-upload"></i> Upload & Process</button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+
+                <h5>CSV Format Requirements</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-sm">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Column</th>
+                                <th>Required</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><code>name</code></td><td><span class="badge bg-danger">Yes</span></td><td>Text</td><td>Project name</td></tr>
+                            <tr><td><code>planned_cost</code></td><td><span class="badge bg-danger">Yes</span></td><td>Number</td><td>Planned cost in dollars</td></tr>
+                            <tr><td><code>actual_cost</code></td><td><span class="badge bg-danger">Yes</span></td><td>Number</td><td>Actual cost in dollars</td></tr>
+                            <tr><td><code>planned_effort</code></td><td><span class="badge bg-danger">Yes</span></td><td>Number</td><td>Planned effort in hours</td></tr>
+                            <tr><td><code>actual_effort</code></td><td><span class="badge bg-danger">Yes</span></td><td>Number</td><td>Actual effort in hours</td></tr>
+                            <tr><td><code>resource_count</code></td><td><span class="badge bg-secondary">No</span></td><td>Integer</td><td>Number of team members</td></tr>
+                            <tr><td><code>start_date</code></td><td><span class="badge bg-secondary">No</span></td><td>YYYY-MM-DD</td><td>Project start date</td></tr>
+                            <tr><td><code>end_date</code></td><td><span class="badge bg-secondary">No</span></td><td>YYYY-MM-DD</td><td>Project end date</td></tr>
+                            <tr><td><code>tech_stack</code></td><td><span class="badge bg-secondary">No</span></td><td>Text</td><td>Technologies used</td></tr>
+                            <tr><td><code>status</code></td><td><span class="badge bg-secondary">No</span></td><td>Text</td><td>Active / Completed / On Hold</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h5 class="mt-3">Sample CSV</h5>
+                <pre class="bg-light p-3 rounded"><code>name,planned_cost,actual_cost,planned_effort,actual_effort,resource_count,start_date,end_date,tech_stack,status
+Project Alpha,50000,48000,500,480,5,2025-01-01,2025-06-30,Python/Django,Active
+Project Beta,120000,150000,1200,1500,10,2025-02-01,2025-08-31,Java/Spring,Active</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

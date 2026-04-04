@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-shield-lock"></i> Admin Panel</h2>
+
+<!-- System Stats -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card card-stat bg-primary text-white">
+            <div class="card-body text-center">
+                <h3>{{ stats.total_projects }}</h3>
+                <p class="mb-0">Total Projects</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat bg-danger text-white">
+            <div class="card-body text-center">
+                <h3>{{ stats.total_alerts }}</h3>
+                <p class="mb-0">Total Alerts</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat bg-warning text-dark">
+            <div class="card-body text-center">
+                <h3>{{ stats.unread_alerts }}</h3>
+                <p class="mb-0">Unread Alerts</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card card-stat bg-info text-white">
+            <div class="card-body text-center">
+                <h3>{{ stats.total_users }}</h3>
+                <p class="mb-0">Total Users</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- All Alerts -->
+<div class="card mb-4">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0"><i class="bi bi-bell-fill"></i> All Alerts (System-wide)</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Project</th>
+                        <th>Manager</th>
+                        <th>Type</th>
+                        <th>Severity</th>
+                        <th>Risk Score</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in alert_data %}
+                    {% set a = item.alert %}
+                    <tr>
+                        <td>{{ a.alert_id }}</td>
+                        <td><strong>{{ item.project_name }}</strong></td>
+                        <td>{{ item.manager_name }}</td>
+                        <td><span class="badge bg-secondary">{{ a.alert_type }}</span></td>
+                        <td>
+                            {% if a.severity == 'High Risk' %}
+                                <span class="badge badge-high">High Risk</span>
+                            {% elif a.severity == 'Warning' %}
+                                <span class="badge badge-warning">Warning</span>
+                            {% else %}
+                                <span class="badge badge-safe">Safe</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ "%.2f"|format(a.risk_score) }}</td>
+                        <td>
+                            {% if a.status == 'UNREAD' %}
+                                <span class="badge bg-danger">UNREAD</span>
+                            {% elif a.status == 'SEEN' %}
+                                <span class="badge bg-warning text-dark">SEEN</span>
+                            {% else %}
+                                <span class="badge bg-success">ACK</span>
+                            {% endif %}
+                        </td>
+                        <td><small>{{ a.created_at.strftime('%m/%d %H:%M') if a.created_at else '-' }}</small></td>
+                        <td>
+                            {% if a.status != 'ACKNOWLEDGED' %}
+                            <form method="POST" action="/alerts/{{ a.alert_id }}/acknowledge" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-outline-success" title="Acknowledge">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not alert_data %}
+        <div class="text-center py-4 text-muted">No alerts in the system.</div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Recent Activity Logs -->
+<div class="card">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0"><i class="bi bi-journal-text"></i> Recent Activity Logs</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>ID</th>
+                        <th>User ID</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                        <th>Endpoint</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in recent_logs %}
+                    <tr>
+                        <td>{{ log.log_id }}</td>
+                        <td>{{ log.user_id }}</td>
+                        <td><span class="badge bg-info">{{ log.role }}</span></td>
+                        <td>{{ log.action }}</td>
+                        <td><code>{{ log.endpoint }}</code></td>
+                        <td><small>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') if log.timestamp else '-' }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if not recent_logs %}
+        <div class="text-center py-4 text-muted">No activity logs yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
