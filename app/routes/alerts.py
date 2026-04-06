@@ -42,7 +42,33 @@ async def list_alerts(
         })
 
     msg = request.query_params.get("msg", "")
-    return render("alerts.html", request, {"user": user, "alert_data": alert_data, "msg": msg})
+
+    # ── Chart data for alerts page ──
+    import json as _json
+    severity_counts = {"Safe": 0, "Warning": 0, "High Risk": 0}
+    status_counts = {"UNREAD": 0, "SEEN": 0, "ACKNOWLEDGED": 0}
+    for item in alert_data:
+        a = item["alert"]
+        sev = a.severity or "Unknown"
+        if sev in severity_counts:
+            severity_counts[sev] += 1
+        st = a.status or "UNREAD"
+        if st in status_counts:
+            status_counts[st] += 1
+
+    alert_chart = {
+        "severity_labels": list(severity_counts.keys()),
+        "severity_values": list(severity_counts.values()),
+        "status_labels": list(status_counts.keys()),
+        "status_values": list(status_counts.values()),
+    }
+
+    return render("alerts.html", request, {
+        "user": user,
+        "alert_data": alert_data,
+        "alert_chart_json": _json.dumps(alert_chart),
+        "msg": msg,
+    })
 
 
 @router.post("/alerts/{alert_id}/seen")
