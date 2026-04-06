@@ -14,45 +14,114 @@
 
 <!-- Stats Cards -->
 <div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card card-stat border-primary">
-            <div class="card-body text-center">
-                <h5 class="card-title text-primary">{{ project_data|length }}</h5>
-                <p class="card-text text-muted mb-0">Total Projects</p>
+    <div class="col-md-3 mb-3">
+        <div class="card card-stat stat-total">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-folder2-open stat-icon"></i>
+                <h3 class="mb-0">{{ project_data|length }}</h3>
+                <small class="opacity-75">Total Projects</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card card-stat border-success">
-            <div class="card-body text-center">
-                <h5 class="card-title text-success">
+    <div class="col-md-3 mb-3">
+        <div class="card card-stat stat-safe">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-shield-check stat-icon"></i>
+                <h3 class="mb-0">
                     {{ project_data|selectattr('prediction')|selectattr('prediction.predicted_risk', 'equalto', 'Safe')|list|length }}
-                </h5>
-                <p class="card-text text-muted mb-0">Safe</p>
+                </h3>
+                <small class="opacity-75">Safe</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card card-stat border-warning">
-            <div class="card-body text-center">
-                <h5 class="card-title text-warning">
+    <div class="col-md-3 mb-3">
+        <div class="card card-stat stat-warn">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-exclamation-triangle stat-icon"></i>
+                <h3 class="mb-0">
                     {{ project_data|selectattr('prediction')|selectattr('prediction.predicted_risk', 'equalto', 'Warning')|list|length }}
-                </h5>
-                <p class="card-text text-muted mb-0">Warning</p>
+                </h3>
+                <small class="opacity-75">Warning</small>
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card card-stat border-danger">
-            <div class="card-body text-center">
-                <h5 class="card-title text-danger">
+    <div class="col-md-3 mb-3">
+        <div class="card card-stat stat-danger">
+            <div class="card-body text-center py-3">
+                <i class="bi bi-fire stat-icon"></i>
+                <h3 class="mb-0">
                     {{ project_data|selectattr('prediction')|selectattr('prediction.predicted_risk', 'equalto', 'High Risk')|list|length }}
-                </h5>
-                <p class="card-text text-muted mb-0">High Risk</p>
+                </h3>
+                <small class="opacity-75">High Risk</small>
             </div>
         </div>
     </div>
 </div>
+
+<!-- ───────── Charts Section ───────── -->
+{% if project_data %}
+<div class="row mb-4">
+    <!-- Risk Distribution Pie -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-pie-chart"></i> Risk Distribution</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="riskPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Status Distribution Pie -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-pie-chart-fill"></i> Status Breakdown</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="statusPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- Manager Workload Bar (ADMIN) / Overrun Top 10 (others) -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            {% if user.role == 'ADMIN' %}
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-people"></i> Manager Workload</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="managerBarChart"></canvas>
+            </div>
+            {% else %}
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-bar-chart"></i> Top Overruns</div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <canvas id="overrunBarChart"></canvas>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Row 2: Overrun bar (ADMIN gets it here) + Cost bar (non-VIEWER) -->
+<div class="row mb-4">
+    {% if user.role == 'ADMIN' %}
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-bar-chart"></i> Top 10 Cost Overruns (%)</div>
+            <div class="card-body">
+                <canvas id="overrunBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% if user.role != 'VIEWER' %}
+    <div class="col-md-{{ '6' if user.role == 'ADMIN' else '12' }} mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-cash-stack"></i> Planned vs Actual Cost (Top 12)</div>
+            <div class="card-body">
+                <canvas id="costBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+<!-- ───────── End Charts Section ───────── -->
 
 <!-- Filter Controls -->
 <div class="card mb-3">
@@ -183,8 +252,9 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script>
-    // Client-side filtering
+    // ── Filter logic (unchanged) ──
     document.getElementById('searchInput').addEventListener('input', filterProjects);
     document.getElementById('riskFilter').addEventListener('change', filterProjects);
     document.getElementById('statusFilter').addEventListener('change', filterProjects);
@@ -205,6 +275,148 @@
             const matchStatus = !status || rowStatus === status;
 
             row.style.display = (matchSearch && matchRisk && matchStatus) ? '' : 'none';
+        });
+    }
+
+    // ── Charts ──
+    const cd = {{ chart_data_json|safe }};
+
+    // Color palettes
+    const riskColors = ['#198754', '#ffc107', '#dc3545'];
+    const statusPalette = ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6c757d', '#0dcaf0', '#6610f2'];
+
+    // 1. Risk Pie Chart
+    if (document.getElementById('riskPieChart')) {
+        new Chart(document.getElementById('riskPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: cd.risk_labels,
+                datasets: [{
+                    data: cd.risk_values,
+                    backgroundColor: riskColors,
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 12 } }
+                }
+            }
+        });
+    }
+
+    // 2. Status Pie Chart
+    if (document.getElementById('statusPieChart')) {
+        new Chart(document.getElementById('statusPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: cd.status_labels,
+                datasets: [{
+                    data: cd.status_values,
+                    backgroundColor: statusPalette.slice(0, cd.status_labels.length),
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 12 } }
+                }
+            }
+        });
+    }
+
+    // 3. Top Overrun Bar Chart
+    if (document.getElementById('overrunBarChart')) {
+        new Chart(document.getElementById('overrunBarChart'), {
+            type: 'bar',
+            data: {
+                labels: cd.overrun_labels,
+                datasets: [{
+                    label: 'Overrun %',
+                    data: cd.overrun_values,
+                    backgroundColor: cd.overrun_values.map(v => v > 20 ? '#dc3545' : v > 10 ? '#ffc107' : '#198754'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { beginAtZero: true, title: { display: true, text: 'Overrun %' } }
+                }
+            }
+        });
+    }
+
+    // 4. Manager Workload Bar (ADMIN only)
+    if (document.getElementById('managerBarChart')) {
+        new Chart(document.getElementById('managerBarChart'), {
+            type: 'bar',
+            data: {
+                labels: cd.manager_labels,
+                datasets: [{
+                    label: 'Projects',
+                    data: cd.manager_values,
+                    backgroundColor: statusPalette.slice(0, cd.manager_labels.length),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, ticks: { stepSize: 1 } }
+                }
+            }
+        });
+    }
+
+    // 5. Cost: Planned vs Actual (non-VIEWER)
+    if (document.getElementById('costBarChart')) {
+        new Chart(document.getElementById('costBarChart'), {
+            type: 'bar',
+            data: {
+                labels: cd.cost_labels,
+                datasets: [
+                    {
+                        label: 'Planned Cost',
+                        data: cd.cost_planned,
+                        backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'Actual Cost',
+                        data: cd.cost_actual,
+                        backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return ctx.dataset.label + ': $' + ctx.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(v) { return '$' + (v / 1000).toFixed(0) + 'K'; }
+                        }
+                    },
+                    x: { ticks: { maxRotation: 45, minRotation: 30 } }
+                }
+            }
         });
     }
 </script>
