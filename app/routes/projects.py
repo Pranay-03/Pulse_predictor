@@ -53,9 +53,76 @@ async def list_projects(
     msg = request.query_params.get("msg", "")
     error = request.query_params.get("error", "")
 
+    # ── Chart data ──
+    import json as _json
+
+    # Risk distribution (pie chart)
+    risk_counts = {"Safe": 0, "Warning": 0, "High Risk": 0}
+    # Status distribution (pie chart)
+    status_counts = {}
+    # Per-project overrun bar chart (top 10 by overrun)
+    overrun_items = []
+    # Cost: planned vs actual (bar chart, non-VIEWER only)
+    cost_labels = []
+    cost_planned = []
+    cost_actual = []
+    # Manager workload (bar chart, ADMIN only)
+    manager_project_counts = {}
+
+    for item in project_data:
+        p = item["project"]
+        pred = item["prediction"]
+        mgr_name = item["manager_name"]
+
+        # Risk
+        if pred and pred.predicted_risk in risk_counts:
+            risk_counts[pred.predicted_risk] += 1
+
+        # Status
+        st = p.status or "Unknown"
+        status_counts[st] = status_counts.get(st, 0) + 1
+
+        # Overrun
+        if pred:
+            overrun_items.append({"name": p.name[:20], "overrun": round(pred.predicted_overrun, 1)})
+
+        # Cost (top 15 by planned cost)
+        cost_labels.append(p.name[:18])
+        cost_planned.append(round(p.planned_cost or 0, 0))
+        cost_actual.append(round(p.actual_cost or 0, 0))
+
+        # Manager workload
+        manager_project_counts[mgr_name] = manager_project_counts.get(mgr_name, 0) + 1
+
+    # Sort overrun descending, take top 10
+    overrun_items.sort(key=lambda x: x["overrun"], reverse=True)
+    overrun_top = overrun_items[:10]
+
+    # Sort cost by planned descending, take top 12
+    cost_sorted = sorted(zip(cost_labels, cost_planned, cost_actual), key=lambda x: x[1], reverse=True)[:12]
+    if cost_sorted:
+        cost_labels, cost_planned, cost_actual = zip(*cost_sorted)
+    else:
+        cost_labels, cost_planned, cost_actual = [], [], []
+
+    chart_data = {
+        "risk_labels": list(risk_counts.keys()),
+        "risk_values": list(risk_counts.values()),
+        "status_labels": list(status_counts.keys()),
+        "status_values": list(status_counts.values()),
+        "overrun_labels": [o["name"] for o in overrun_top],
+        "overrun_values": [o["overrun"] for o in overrun_top],
+        "cost_labels": list(cost_labels),
+        "cost_planned": list(cost_planned),
+        "cost_actual": list(cost_actual),
+        "manager_labels": list(manager_project_counts.keys()),
+        "manager_values": list(manager_project_counts.values()),
+    }
+
     return render("dashboard.html", request, {
         "user": user,
         "project_data": project_data,
+        "chart_data_json": _json.dumps(chart_data),
         "msg": msg,
         "error": error,
     })
