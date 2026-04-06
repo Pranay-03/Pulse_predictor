@@ -7,6 +7,28 @@
     <span class="badge bg-danger fs-6">{{ alert_data|length }} Total</span>
 </div>
 
+<!-- Alert Charts -->
+{% if alert_data %}
+<div class="row mb-4">
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-pie-chart"></i> Severity Distribution</div>
+            <div class="card-body d-flex align-items-center justify-content-center" style="max-height:280px;">
+                <canvas id="severityPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-white fw-semibold"><i class="bi bi-bar-chart"></i> Alert Status</div>
+            <div class="card-body d-flex align-items-center justify-content-center" style="max-height:280px;">
+                <canvas id="alertStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% if alert_data %}
 <div class="accordion" id="alertsAccordion">
     {% for item in alert_data %}
@@ -151,4 +173,46 @@
     <p class="text-muted mt-2">No alerts found.</p>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+    const ac = {{ alert_chart_json|safe }};
+
+    if (document.getElementById('severityPieChart')) {
+        new Chart(document.getElementById('severityPieChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ac.severity_labels,
+                datasets: [{
+                    data: ac.severity_values,
+                    backgroundColor: ['#198754', '#ffc107', '#dc3545'],
+                    borderWidth: 2
+                }]
+            },
+            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+
+    if (document.getElementById('alertStatusChart')) {
+        new Chart(document.getElementById('alertStatusChart'), {
+            type: 'bar',
+            data: {
+                labels: ac.status_labels,
+                datasets: [{
+                    label: 'Count',
+                    data: ac.status_values,
+                    backgroundColor: ['#dc3545', '#ffc107', '#198754'],
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+            }
+        });
+    }
+</script>
 {% endblock %}
